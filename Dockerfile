@@ -16,3 +16,17 @@ RUN ./autogen.sh && \
     make && \
     make check && \
     make install
+
+RUN apk add --no-cache go git
+
+ENV GOPATH=/gocode \
+    PATH=/gocode/bin/:$PATH
+
+RUN go get -u github.com/golang/protobuf/protoc-gen-go
+
+VOLUME /proto
+
+WORKDIR /proto
+ENTRYPOINT [ "protoc", "--go_out=plugins=grpc:. ./test.proto" ]
+
+# CMD [ "protoc --go_out=plugins=grpc:. $(wildcard *.proto)" ]
